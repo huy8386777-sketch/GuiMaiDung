@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Mai Dung ❤️</title>
+    <!-- Font chữ lãng mạn từ Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff4d6d;
+            --accent: #00f2fe;
+            --bg: #0a0a12;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg);
+            font-family: 'Quicksand', sans-serif;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+        }
+
+        #countdown-screen, #letter-screen {
+            position: absolute;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        /* Khung kính Neon */
+        .glass-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 35px;
+            padding: 50px 30px;
+            width: 85%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(255, 77, 109, 0.2);
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .countdown {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .unit {
+            background: rgba(0, 0, 0, 0.4);
+            width: 75px;
+            padding: 15px 0;
+            border-radius: 18px;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .unit span { font-size: 2.2rem; font-weight: 700; color: var(--primary); display: block; }
+        .unit p { margin: 5px 0 0; font-size: 0.65rem; opacity: 0.6; text-transform: uppercase; }
+
+        /* Bức thư */
+        #letter-screen {
+            opacity: 0;
+            transform: scale(0.9) translateY(40px);
+            pointer-events: none;
+        }
+
+        .letter-paper {
+            background: #fff;
+            color: #333;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 0 60px rgba(255, 77, 109, 0.4);
+            width: 85%;
+            max-width: 480px;
+            line-height: 1.8;
+            position: relative;
+        }
+
+        #text { 
+            font-size: 1.15rem; 
+            font-weight: 500;
+            color: #333;
+            min-height: 160px;
+            text-align: left;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .signature { 
+            text-align: right; 
+            margin-top: 25px; 
+            color: var(--primary); 
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem; 
+            opacity: 0; 
+            transition: 2s; 
+        }
+
+        /* Hạt rơi */
+        .heart-p { position: absolute; pointer-events: none; animation: fly linear forwards; }
+        @keyframes fly { 
+            0% { transform: translateY(0) scale(0); opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.6) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <div id="countdown-screen">
+        <div class="glass-card">
+            <h1>Sắp đến ngày của em ❤️</h1>
+            <div class="countdown">
+                <div class="unit"><span id="days">00</span><p>Ngày</p></div>
+                <div class="unit"><span id="hours">00</span><p>Giờ</p></div>
+                <div class="unit"><span id="minutes">00</span><p>Phút</p></div>
+                <div class="unit"><span id="seconds">00</span><p>Giây</p></div>
+            </div>
+            <p style="margin-top: 30px; font-size: 0.9rem; opacity: 0.7; font-style: italic;">
+                "Dù là bao lâu, anh vẫn sẽ đợi..."
+            </p>
+        </div>
+    </div>
+
+    <div id="letter-screen">
+        <div class="letter-paper">
+            <div id="text"></div>
+            <div class="signature" id="signature">— Mãi yêu em —</div>
+        </div>
+    </div>
+
+    <script>
+        // THIẾT LẬP: Ngày 07 tháng 05 năm 2026 (Số 4 là tháng 5)
+        const targetDate = new Date(2026, 4, 7, 0, 0, 0).getTime();
+
+        const timer = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = d < 10 ? "0" + d : d;
+            document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
+            document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
+            document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
+
+            if (distance <= 0) {
+                clearInterval(timer);
+                reveal();
+            }
+        }, 1000);
+
+        function reveal() {
+            document.getElementById('countdown-screen').style.opacity = '0';
+            document.getElementById('countdown-screen').style.transform = 'translateY(-30px)';
+            
+            setTimeout(() => {
+                document.getElementById('countdown-screen').style.display = 'none';
+                const ls = document.getElementById('letter-screen');
+                ls.style.opacity = '1';
+                ls.style.transform = 'scale(1) translateY(0)';
+                ls.style.pointerEvents = 'auto';
+                type();
+            }, 1000);
+        }
+
+        const message = "Chúc mừng sinh nhật bé yêu! ❤️ Cuối cùng khoảnh khắc mà chúng mình mong đợi cũng đã đến. Chúc em tuổi mới rực rỡ như những đóa hoa, luôn giữ nụ cười hạnh phúc trên môi nhé. Cảm ơn em đã xuất hiện và làm cho cuộc sống của anh trở nên ý nghĩa hơn. Anh hứa sẽ luôn bên cạnh, chăm sóc và yêu thương em thật nhiều. Happy Birthday Mai Dung";
+
+        function type() {
+            let i = 0;
+            const el = document.getElementById("text");
+            const typing = setInterval(() => {
+                if (i < message.length) {
+                    el.innerHTML += message.charAt(i);
+                    i++;
+                    if(i % 5 === 0) createHeart();
+                } else {
+                    clearInterval(typing);
+                    document.getElementById("signature").style.opacity = "1";
+                    setInterval(createHeart, 200);
+                }
+            }, 60);
+        }
+
+        function createHeart() {
+            const h = document.createElement('div');
+            h.classList.add('heart-p');
+            h.innerHTML = ['❤️','💖','✨','🌸'][Math.floor(Math.random()*4)];
+            h.style.left = Math.random() * 100 + 'vw';
+            h.style.bottom = '-5vh';
+            h.style.fontSize = Math.random() * 20 + 20 + 'px';
+            h.style.animationDuration = Math.random() * 2 + 3 + 's';
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 4000);
+        }
+
+        // Star Effect Background
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars = [];
+            for(let i=0; i<100; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, s:Math.random()*2});
+        }
+        function draw() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "#fff";
+            stars.forEach(s => {
+                ctx.beginPath(); ctx.arc(s.x, s.y, s.s, 0, Math.PI*2); ctx.fill();
+                s.y -= 0.2; if(s.y<0) s.y=canvas.height;
+            });
+            requestAnimationFrame(draw);
+        }
+        init(); draw();
+        window.onresize = init;
+    </script>
+</body>
+</html>
